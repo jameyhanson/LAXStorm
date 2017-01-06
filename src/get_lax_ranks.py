@@ -101,5 +101,5 @@ def main():
         getHSRankRecords(urlDict)
     
     conn.close()
-
+    # blah
 main()
