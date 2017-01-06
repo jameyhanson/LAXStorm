@@ -13,7 +13,6 @@ def getConnection():
                         port = 5432,
                         host='/tmp/', #added to avoid 'connections on Unix domain socket "/var/pgsql_socket/.s.PGSQL.5432"?'
                         password='cloudera')
-
     return conn
 
 def runSQL(conn, sql):
@@ -33,12 +32,13 @@ def main():
     
     # create tables
     sql='''
-CREATE TABLE high_schools (
+CREATE TABLE lax.high_schools (
     id             SERIAL PRIMARY KEY,
     created_on     TIMESTAMP DEFAULT now(),
     raw_name       TEXT,
     script_updated_name TEXT,
     manually_updated_name TEXT,
+    geo_code_name  TEXT,
     geolocate      JSONB,
     geo_accuracy    TEXT);'''
     runSQL(conn, sql)
