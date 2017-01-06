@@ -5,7 +5,6 @@ Created on Jan 6, 2017
 
 Desc: get lacrosse ranks from www.laxpower.com
 '''
-
 import urllib.request
 import psycopg2
 
