@@ -45,6 +45,7 @@ CREATE TABLE lax.high_schools (
     latitude       NUMERIC,
     longitude      NUMERIC,
     geo_accuracy   TEXT,
+    geolocate_tried BOOLEAN,
     geolocated     BOOLEAN);'''
     runSQL(conn, sql)
     print('lax.high_shools created')
