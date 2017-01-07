@@ -42,11 +42,12 @@ CREATE TABLE lax.high_schools (
     geolocate      JSONB,
     geo_accuracy    TEXT);'''
     runSQL(conn, sql)
+    print('lax.high_shools created')
     
     sql = '''
 CREATE TABLE lax.hs_ranks (
     id             SERIAL PRIMARY KEY,
-    hs_id          SERIAL REFERENCES lax.high_schools (id),
+    hs_id          BIGINT REFERENCES lax.high_schools (id),
     created_on     TIMESTAMP DEFAULT now(),
     url            TEXT,
     gender         CHAR(3),
@@ -56,6 +57,7 @@ CREATE TABLE lax.hs_ranks (
     raw_hs_name    TEXT,
     state          CHAR(2));'''
     runSQL(conn, sql)
+    print('lax.hs_ranks created')
 
     conn.close()
     

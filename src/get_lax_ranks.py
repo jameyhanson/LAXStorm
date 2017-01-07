@@ -9,7 +9,7 @@ Desc: get lacrosse ranks from www.laxpower.com
 '''
 import urllib.request
 import psycopg2
-from http.cookiejar import EPOCH_YEAR
+# from http.cookiejar import EPOCH_YEAR
 from multiprocessing.managers import State
 
 '''
@@ -40,7 +40,7 @@ class HSRankRecord:
         self.year = year
         self.rank = rank
         self.hs = hs
-        self.state = State
+        self.state = state
         
     def getUrl(self):
         return self.url
@@ -86,73 +86,67 @@ def generateUrlRecords(startYear, endYear):
             urlRecords.append(urlRecord)
     return (urlRecords)   # a dictionary of {url:, year:, gender:}
 
-def getHSRankRecords(urlDict):
-    response = urllib.request.urlopen(urlDict['url'])
-      
+def getHSRankRecords(urlRecord):
+    response = urllib.request.urlopen(urlRecord.getUrl())
+    
+    HSRankRecords = []
+    
     for line in response:
         row = str(line.rstrip())
         if row.find(".PHP") > 0:
-            #print (row)
             lax_rank = eval(row[row.find("b'")+3:row.find("<A")])
             school = (row[(row.find('.PHP">')+6):row.find("</A>")].strip()).replace("\\","")
-            # replace single-quote with two single-quote for the insert
-            school = school.replace("'", ",,")
-            # sometimes HS is embedded in the name
-            school = school.replace(" HS ", " ")
-            # sometimes there is a , STATE in the name
             if school.find(',') > 0:
                 school = school[:school.find(',')]
+            school = school.replace("'", "''")  #PostgreSQL double ticks [''] are escapes for single ticks [']
             state = row[row.find("</A>") + 4:row.find("<span") - 12].strip()
-            print(
-                 urlDict['url'], '\t',
-                 urlDict['gender'], '\t',
-                 urlDict['year'], '\t',
-                 str(lax_rank), '\t',
-                 school, '\t',
-                 state)
+            hsRankRecord = HSRankRecord(urlRecord.getUrl(), urlRecord.getGender(), urlRecord.getYear(), str(lax_rank), school, state)
+            HSRankRecords.append(hsRankRecord)
         elif row.find("padding-bottom") > 0:
             response.close()
-    return (None)
-   
-def writeHSRank(url, gender, year, lax_rank, high_school, state):
-    
-    conn = getConnection()
-  
-    sql = (
-           "INSERT INTO hs_ranks (" +
-           "url," +
-           "gender, " +
-           "year, " +
-           "lax_rank, " +
-           "high_school, " +
-           "state) VALUES (" +
-           "'" + url + "', " +
-           "'" + gender + "', " +
-           str(year) + ", " +
-           str(lax_rank) + ", " +
-           "'" + high_school + "', " +
-           "'" + state + "')" )
-    runSQL(conn, sql)
+    return (HSRankRecords)
 
-    conn.close()
+def writeHSRankRecord(HSRankRecord, conn):
+    #conn = getConnection()
+    
+    sql = '''
+INSERT INTO lax.hs_ranks (
+    url,
+    gender,
+    year,
+    rank,
+    raw_hs_name,
+    state) VALUES (''' + (
+    "'" + HSRankRecord.getUrl() + "', " +
+    "'" + HSRankRecord.getGender() + "', " +
+    str(HSRankRecord.getYear()) + ", " +
+    str(HSRankRecord.getRank()) + ", " +
+    "'" + HSRankRecord.getHS() + "', " +
+    "'" + HSRankRecord.getState() + "');")
+    
+    runSQL(conn, sql)
+    #conn.close()
    
 def main():   
     START_YEAR = 2005
-    END_YEAR = 2005 #2016
+    END_YEAR = 2016
+    conn = getConnection()
     
     # urlList is a list of url dictionaries
     urls = []
-    urls = generateUrlRecords(START_YEAR, END_YEAR)   
+    urls = generateUrlRecords(START_YEAR, END_YEAR)
+    
+    hsRankRecords = []
     
     for urlRecord in urls:
-        print(urlRecord.getUrl())
-    
-    print('done')
-    
-    #for urlRecord in urls:
-    #   hs_record = getHSRankRecords(urlRecord)
+        hsRankRecords = getHSRankRecords(urlRecord)
         
-                    # writeHSRank(urlDict['url'], urlDict['gender'], urlDict['year'], str(lax_rank), school, state)
-    
+        for HSRankRecord in hsRankRecords:
+            writeHSRankRecord(HSRankRecord, conn)
+        
+        print('Completed ', HSRankRecord.getGender(), ':', str(HSRankRecord.getYear()))
+        
+    conn.close()
+    print('All done')
 if __name__ == '__main__':
     main()
