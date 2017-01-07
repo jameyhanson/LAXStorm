@@ -23,6 +23,40 @@ def runSQL(conn, sql):
 def main():
     conn = getConnection()
     
+    '''
+    HS    High School 
+    Sch   School
+    CDS   Country Day School
+    
+    CS    Country School
+          Christian School
+          Catholic School
+    
+    
+    SQL statements:
+    
+    UPDATE lax.high_schools
+    SET script_updated_name = REPLACE(raw_name, ' HS', ' High School')
+    WHERE raw_name LIKE '% HS';
+    
+    UPDATE lax.high_schools
+    SET script_updated_name = REPLACE(raw_name, ' Sch', ' School')
+    WHERE raw_name LIKE '% Sch';
+    
+    UPDATE lax.high_schools
+    SET script_updated_name = REPLACE(raw_name, ' CDS', ' Country Day School')
+    WHERE raw_name LIKE '% CDS';
+    
+    UPDATE lax.high_schools
+    SET script_updated_name = raw_name || ' High School'
+    WHERE raw_name NOT LIKE '%School%'
+    AND raw_name NOT LIKE '% CS'
+    AND script_updated_name IS NULL;
+    
+    UPDATE lax.high_schools
+    SET searched_name = COALESCE(script_updated_name, raw_name);
+    '''
+    
     conn.close()
     
     print('prep_hs_names.py complete')
