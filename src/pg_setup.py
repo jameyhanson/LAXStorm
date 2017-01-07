@@ -36,11 +36,16 @@ CREATE TABLE lax.high_schools (
     id             SERIAL PRIMARY KEY,
     created_on     TIMESTAMP DEFAULT now(),
     raw_name       TEXT,
+    state          CHAR(2),
     script_updated_name TEXT,
     manually_updated_name TEXT,
+    searched_name  TEXT,
     geo_code_name  TEXT,
     geolocate      JSONB,
-    geo_accuracy    TEXT);'''
+    latitude       NUMERIC,
+    longitude      NUMERIC,
+    geo_accuracy   TEXT,
+    geolocated     BOOLEAN);'''
     runSQL(conn, sql)
     print('lax.high_shools created')
     

@@ -106,9 +106,7 @@ def getHSRankRecords(urlRecord):
             response.close()
     return (HSRankRecords)
 
-def writeHSRankRecord(HSRankRecord, conn):
-    #conn = getConnection()
-    
+def writeHSRankRecord(HSRankRecord, conn):    
     sql = '''
 INSERT INTO lax.hs_ranks (
     url,
@@ -126,6 +124,29 @@ INSERT INTO lax.hs_ranks (
     
     runSQL(conn, sql)
     #conn.close()
+
+def populateHighSchools(conn):
+    sql = '''
+INSERT INTO lax.high_schools (
+   raw_name,
+   state) 
+   (SELECT DISTINCT
+     raw_hs_name,
+     state
+   FROM lax.hs_ranks);'''
+    
+    runSQL(conn, sql)
+    
+def updateHSRanks(conn):
+    sql = '''
+ UPDATE lax.hs_ranks AS hr
+ SET hs_id = (
+   SELECT hs.id
+   FROM lax.high_schools hs
+   WHERE hs.raw_name = hr.raw_hs_name
+   AND hs.state = hr.state);'''
+    
+    runSQL(conn, sql)
    
 def main():   
     START_YEAR = 2005
@@ -145,6 +166,12 @@ def main():
             writeHSRankRecord(HSRankRecord, conn)
         
         print('Completed ', HSRankRecord.getGender(), ':', str(HSRankRecord.getYear()))
+    
+    populateHighSchools(conn)
+    print('Populated lax.high_schools')
+    
+    updateHSRanks(conn)
+    print('Updated lax.hs_ranks')
         
     conn.close()
     print('All done')
