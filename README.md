@@ -14,4 +14,5 @@ The planned sequence is:
  5. get_heatmap_data.py: extract the data into a format for heatmap display
  6. generate_heatmaps.py: generate the heat maps.
 ## ToDo
- 7-Jan-16: Find out how to use GoogleV3 with geopy and code that as an option
+ 7-Jan-16: Find out how to use GoogleV3 with geopy and code that as an option  
+           see  https://developers.google.com/maps/documentation/geocoding/
