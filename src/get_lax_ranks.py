@@ -125,7 +125,7 @@ INSERT INTO lax.hs_ranks (
     runSQL(conn, sql)
     #conn.close()
 
-def populateHighSchools(conn):
+def populateHighSchools(conn, num_schools_per_year):
     sql = '''
 INSERT INTO lax.high_schools (
    raw_name,
@@ -134,7 +134,7 @@ INSERT INTO lax.high_schools (
      raw_hs_name,
      state
    FROM lax.hs_ranks
-   WHERE rank >= 1000);'''
+   WHERE rank >= ''' + str(num_schools_per_year) + ');'
     
     runSQL(conn, sql)
     
@@ -150,8 +150,9 @@ def updateHSRanks(conn):
     runSQL(conn, sql)
    
 def main():   
-    START_YEAR = 2005
+    START_YEAR = 2003
     END_YEAR = 2016
+    num_schools_per_year = 1500
     conn = getConnection()
     
     # urlList is a list of url dictionaries
@@ -168,7 +169,7 @@ def main():
         
         print('Completed ', HSRankRecord.getGender(), ':', str(HSRankRecord.getYear()))
     
-    populateHighSchools(conn)
+    populateHighSchools(conn, num_schools_per_year)
     print('Populated lax.high_schools')
     
     updateHSRanks(conn)
