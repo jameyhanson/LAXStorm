@@ -13,3 +13,5 @@ The planned sequence is:
  4. hs_geocode.py: use Google to geocode high schools.  Note that this is an iterative process because some schools won't geocode  
  5. get_heatmap_data.py: extract the data into a format for heatmap display
  6. generate_heatmaps.py: generate the heat maps.
+## ToDo
+ 7-Jan-16: Find out how to use GoogleV3 with geopy and code that as an option
