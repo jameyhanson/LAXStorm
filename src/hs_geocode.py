@@ -4,7 +4,7 @@ Created on Jan 7, 2017
 @author: jamey
 '''
 import psycopg2
-from geopy.geocoders import baidu, DataBC, GeocodeFarm, GeocoderDotUS, geonames, GoogleV3, Nominatim
+from geopy import geocoders
 from geopy import exc
 from sys import exit
 
@@ -20,9 +20,9 @@ def getConnection():
 
 def geocodeHS(geocoder, id, lookup_hs_name):
     if geocoder == 'nominatim':
-        geolocator = Nominatim()
+        geolocator = geocoders.Nominatim()
     elif geocoder == 'baidu':
-        geolocator = baidu()
+        geolocator = geocoders.baidu()
     elif geocoder == 'databc':
         print('do not use.  Only for British Columbia, CA')
         exit(0)
@@ -31,17 +31,17 @@ def geocodeHS(geocoder, id, lookup_hs_name):
         exit(0)
         # geolocator = GeocodeFarm()
     elif geocoder == 'geocoderdotus':
-        geolocator = GeocoderDotUS()
+        geolocator = geocoders.GeocoderDotUS()
     elif geocoder == 'geonames':
-        geolocator = geonames()
+        geolocator = geocoders.geonames()
     elif geocoder == 'googlev3':
-        geolocator = GoogleV3()
+        geolocator = geocoders.GoogleV3()
     else:
         print('invalid geodocder specified')
         exit(1)
         
     try:
-        return geolocator.geocode(lookup_hs_name, exactly_one=True)
+        return geolocator.geocode(lookup_hs_name, exactly_one=True, timeout=10)
     except exc.GeocoderQuotaExceeded:
         print(geocoder, ':\tGeocoderQuotaExceeded')
         exit(1)
@@ -68,6 +68,8 @@ def getHSList(curr, geocoder, num_schools):
         state
     FROM lax.high_schools
     WHERE geotried_''' + geocoder + ''' Is False
+    AND geolocated Is False
+    ORDER BY id DESC
     LIMIT ''' + str(num_schools) + ';'
 
     curr.execute(sql)
@@ -79,10 +81,10 @@ def runSQL(conn, sql):
     conn.commit()
 
 def main():
-    num_schools = 1
+    num_schools = 400
     conn = getConnection()
     curr = conn.cursor()
-    geocoder = 'geonames'
+    geocoder = 'googlev3'
     
     '''
     arcgis           https://developers.arcgis.com/rest/geocode/api-reference/overview-world-geocoding-service.htm
@@ -106,16 +108,19 @@ def main():
     
     num_geocoded = 0
     num_located = 0
+    lookup_counter = 0
     
     for high_school in HSList:
         num_geocoded += 1
         id = high_school[0]
         lookup_hs_name = high_school[1] + ', ' + high_school[2]
         location = geocodeHS(geocoder, id, lookup_hs_name)
+        lookup_counter += 1
         if location == None:
              sql = 'UPDATE lax.high_schools SET geotried_' + geocoder + '=TRUE WHERE id=' + str(id) + ';'
              runSQL(conn, sql)
-             print('did not find:\t', str(id), '\t', lookup_hs_name)
+             print(str(lookup_counter) + ' of ' + str(num_schools) + 
+                   '\tdid not find:\t', str(id), '\t', lookup_hs_name)
         else:
             sql = ("UPDATE lax.high_schools SET geotried_" + geocoder + "=TRUE, " +
                   "geolocated = TRUE, " + 
@@ -126,8 +131,9 @@ def main():
                   "' WHERE id=" + str(id) + ";")
             runSQL(conn, sql)
             num_located += 1
-            print('found:\t\t', str(id), '\t', lookup_hs_name)
-    print(str(num_geocoded) + ' schools looked up\t', str(num_located), ' geocoded')
+            print(str(lookup_counter) + ' of ' + str(num_schools) + 
+                  '\tfound:\t\t', str(id), '\t', lookup_hs_name)
+    print('\n' + str(num_geocoded) + ' schools looked up\t', str(num_located), ' geocoded')
 
     conn.close()
     
