@@ -51,6 +51,7 @@ CREATE TABLE lax.high_schools (
     geotried_bing  BOOLEAN DEFAULT FALSE,
     geotried_databc BOOLEAN DEFAULT FALSE,
     geotried_geocodefarm BOOLEAN DEFAULT FALSE,
+    geotried_geocoderdotus BOOLEAN DEFAULT FALSE,
     geotried_geonames BOOLEAN DEFAULT FALSE,
     geotried_googlev3 BOOLEAN DEFAULT FALSE,
     geotried_liveaddress BOOLEAN DEFAULT FALSE,
