@@ -133,7 +133,8 @@ INSERT INTO lax.high_schools (
    (SELECT DISTINCT
      raw_hs_name,
      state
-   FROM lax.hs_ranks);'''
+   FROM lax.hs_ranks
+   WHERE rank >= 1000);'''
     
     runSQL(conn, sql)
     

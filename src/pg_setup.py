@@ -41,12 +41,27 @@ CREATE TABLE lax.high_schools (
     manually_updated_name TEXT,
     searched_name  TEXT,
     geo_code_name  TEXT,
-    geolocate      JSONB,
+    json_respons   JSONB,
+    address        TEXT,
     latitude       NUMERIC,
     longitude      NUMERIC,
     geo_accuracy   TEXT,
-    geolocate_tried BOOLEAN,
-    geolocated     BOOLEAN);'''
+    geotried_nominatim BOOLEAN DEFAULT FALSE,
+    geotried_arcgis BOOLEAN DEFAULT FALSE,
+    geotried_baidu BOOLEAN DEFAULT FALSE,
+    geotried_bing  BOOLEAN DEFAULT FALSE,
+    geotried_databc BOOLEAN DEFAULT FALSE,
+    geotried_geocodefarm BOOLEAN DEFAULT FALSE,
+    geotried_geonames BOOLEAN DEFAULT FALSE,
+    geotried_googlev3 BOOLEAN DEFAULT FALSE,
+    geotried_liveaddress BOOLEAN DEFAULT FALSE,
+    geotried_navidata BOOLEAN DEFAULT FALSE,
+    geotried_opencage BOOLEAN DEFAULT FALSE,
+    geotried_openmapquest BOOLEAN DEFAULT FALSE,
+    geotried_yahooplacefinder BOOLEAN DEFAULT FALSE,
+    geotried_whatthreewords BOOLEAN DEFAULT FALSE,
+    geotried_yandex BOOLEAN DEFAULT FALSE,
+    geolocated     BOOLEAN DEFAULT FALSE);'''
     runSQL(conn, sql)
     print('lax.high_shools created')
     
