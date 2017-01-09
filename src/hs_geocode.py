@@ -90,7 +90,7 @@ def main():
     num_schools = 2
     conn = getConnection()
     curr = conn.cursor()
-    geocoder = 'yandex'
+    geocoder = 'googlev3'
     
     '''
     arcgis                      https://developers.arcgis.com/rest/geocode/api-reference/overview-world-geocoding-service.htm
