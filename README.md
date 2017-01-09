@@ -19,5 +19,5 @@ QGIS from http://www.kyngchaos.com/software/qgis
 This includes GDAL and Python libraries NumPy & matplotlib.  QGIS uses Python 2.7, but the rest of the code is Python 3.5.2.  I used `pip3` to install modules in Python 3.5.2 and the QGIS supplied .dmg files for Python 2.7.     
  
 ## ToDo
- 7-Jan-16: Find out how to use GoogleV3 with geopy and code that as an option  
-           see  https://developers.google.com/maps/documentation/geocoding/
+ 9-Jan-17  Add country to high school search string.  Canadian provinces are AB, BC, MB, NB, NS, NT, NU, ON, PE, QC, SK, YT
+ 9-Jan-17  at single character states, 'il', and blank states
