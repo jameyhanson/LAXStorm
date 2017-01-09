@@ -19,13 +19,10 @@ def getConnection():
     return conn
 
 def geocodeHS(geocoder, id, lookup_hs_name):
-    if geocoder == 'nominatim':
-        geolocator = geocoders.Nominatim()
+    if geocoder == 'arcgis':
+        geolocator = geocoders.ArcGIS()
     elif geocoder == 'baidu':
         geolocator = geocoders.baidu()
-    elif geocoder == 'databc':
-        print('do not use.  Only for British Columbia, CA')
-        exit(0)
     elif geocoder == 'geocodefarm':
         print("Troubleshooting AttributeError: 'NoneType' object has no attribute 'replace'")
         exit(0)
@@ -36,6 +33,13 @@ def geocodeHS(geocoder, id, lookup_hs_name):
         geolocator = geocoders.geonames()
     elif geocoder == 'googlev3':
         geolocator = geocoders.GoogleV3()
+    elif geocoder == 'nominatim':
+        geolocator = geocoders.Nominatim()
+    elif geocoder == 'openmapquest':
+        geolocator = geocoders.OpenMapQuest()
+    elif geocoder == 'yandex':
+        print('Do not use.  Russian site')
+        exit(1)
     else:
         print('invalid geodocder specified')
         exit(1)
@@ -57,6 +61,8 @@ def geocodeHS(geocoder, id, lookup_hs_name):
     except exc.GeocoderUnavailable:
         print(geocoder, ':\tGeocoderUnavailable')
         exit(1)
+    except exc.GeocoderInsufficientPrivileges:
+        print(geocoder, ':\tGeocderInsufficientPrivileges')
     except:
         return None
 
@@ -81,28 +87,27 @@ def runSQL(conn, sql):
     conn.commit()
 
 def main():
-    num_schools = 400
+    num_schools = 2
     conn = getConnection()
     curr = conn.cursor()
-    geocoder = 'googlev3'
+    geocoder = 'yandex'
     
     '''
-    arcgis           https://developers.arcgis.com/rest/geocode/api-reference/overview-world-geocoding-service.htm
-    baidu            http://developer.baidu.com/map/webservice-geocoding.htm
-    bing
-    databc           http://www.data.gov.bc.ca/dbc/geographic/locate/geocoding.page
-    geocodefarm      https://www.geocode.farm/geocoding/free-api-documentation/
-    geocoderdotus    http://geocoder.us/
-    geonames         http://www.geonames.org/export/geonames-search.html
-    googlev3         https://developers.google.com/maps/documentation/geocoding/
-    liveaddress
-    navidata
-    nominatim
-    opencage
-    openmapquest
-    yahooplacefinder
-    whatthreewords
-    yandex'''
+    arcgis                      https://developers.arcgis.com/rest/geocode/api-reference/overview-world-geocoding-service.htm
+    baidu            api_key    http://developer.baidu.com/map/webservice-geocoding.htm
+    bing             api_key    https://msdn.microsoft.com/en-us/library/ff701715.aspx
+    geocodefarm                 https://www.geocode.farm/geocoding/free-api-documentation/
+    geocoderdotus               http://geocoder.us/
+    geonames                    http://www.geonames.org/export/geonames-search.html
+    googlev3                    https://developers.google.com/maps/documentation/geocoding/
+    liveaddress      auth_token https://smartystreets.com/products/liveaddress-api
+    navidata                    http://www.navidata.pl
+    nominatim                   https://wiki.openstreetmap.org/wiki/Nominatim
+    opencage         api_key    http://geocoder.opencagedata.com/api.html
+    ERROR IN pygeo                openmapquest                http://developer.mapquest.com/web/products/open/geocoding-service
+    yahooplacefinder consumer_key https://developer.yahoo.com/boss/geo/docs/
+    whatthreewords   api_key    http://what3words.com/api/reference
+    DO NO USE                     yandex                      http://api.yandex.com/maps/doc/geocoder/desc/concepts/input_params.xml'''
     
     HSList = getHSList(curr, geocoder, num_schools)
     

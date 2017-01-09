@@ -6,13 +6,14 @@ Created on Jan 7, 2017
 test: John Carroll CS, FL
 '''
 
-from geopy.geocoders import Nominatim
+from geopy import geocoders
 
 def main():
-    geolocator = Nominatim()
-    string = 'Hilton Head High School, SC'
-    location = geolocator.geocode(string)
-    #location = geolocator("Poly Prep Country Day School, NY")
+    search_string = 'Poly Prep Country Day School, NY'
+    
+    geolocator = geocoders.GeoNames()
+    location = geolocator.geocode(search_string)
+    
     if location == None:
         print('None found')
     else:
