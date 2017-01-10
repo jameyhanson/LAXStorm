@@ -1,4 +1,5 @@
-﻿SELECT COUNT(*), ROUND(COUNT(*)/5888.0*100,2) AS percent FROM lax.high_schools WHERE geolocated = True;
+﻿-- Testing hs name changes to improve geocoding
+SELECT COUNT(*), ROUND(COUNT(*)/4878.0*100,2) AS percent FROM lax.high_schools WHERE geolocated = True;
 
 SELECT 
   id,

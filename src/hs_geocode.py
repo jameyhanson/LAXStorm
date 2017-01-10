@@ -71,7 +71,8 @@ def getHSList(curr, geocoder, num_schools):
     SELECT
         id,
         searched_name,
-        state
+        state,
+        country
     FROM lax.high_schools
     WHERE geotried_''' + geocoder + ''' Is False
     AND geolocated Is False
@@ -87,10 +88,10 @@ def runSQL(conn, sql):
     conn.commit()
 
 def main():
-    num_schools = 2
+    num_schools = 50
     conn = getConnection()
     curr = conn.cursor()
-    geocoder = 'googlev3'
+    geocoder = 'nominatim'
     
     '''
     arcgis                      https://developers.arcgis.com/rest/geocode/api-reference/overview-world-geocoding-service.htm
@@ -118,7 +119,8 @@ def main():
     for high_school in HSList:
         num_geocoded += 1
         id = high_school[0]
-        lookup_hs_name = high_school[1] + ', ' + high_school[2]
+        # lax.high_schools.searched_name         .state                 .country
+        lookup_hs_name = high_school[1] + ', ' + high_school[2] +', ' + high_school[3]
         location = geocodeHS(geocoder, id, lookup_hs_name)
         lookup_counter += 1
         if location == None:

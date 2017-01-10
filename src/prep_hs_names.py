@@ -76,7 +76,22 @@ def main():
     '''
     runSQL(conn, sql)
     print('populated searched_name field')
+
+    sql = '''
+    UPDATE lax.high_schools
+    SET country = 'Cananda'
+    WHERE state in ('AB', 'BC', 'MB', 'NB', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT');
+    '''
+    runSQL(conn, sql)
+    print('updated Canadian schools')
     
+    sql = '''
+    UPDATE lax.high_schools
+    SET country = 'United States of America'
+    WHERE country IS NULL;
+    '''
+    runSQL(conn, sql)
+    print('updated USA schools')        
     conn.close()
     
     print('prep_hs_names.py complete')

@@ -134,7 +134,7 @@ INSERT INTO lax.high_schools (
      raw_hs_name,
      state
    FROM lax.hs_ranks
-   WHERE rank >= ''' + str(num_schools_per_year) + ');'
+   WHERE rank <= ''' + str(num_schools_per_year) + ');'
     
     runSQL(conn, sql)
     
