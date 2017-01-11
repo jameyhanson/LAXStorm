@@ -20,9 +20,32 @@ SELECT
   country,
   geolocated
 FROM lax.high_schools
-WHERE raw_name LIKE 'Acad %'
+WHERE raw_name LIKE '%Friends%'
 AND geolocated = False
 ORDER BY id;
+
+-- Give up and try the raw_name
+UPDATE lax.high_schools
+SET searched_name = raw_name,
+  geotried_googlev3 = False,
+  geotried_nominatim = False
+WHERE geolocated = False;
+
+-- Use raw_name if contains 'Friends'
+UPDATE lax.high_schools
+SET searched_name = raw_name,
+  geotried_googlev3 = False,
+  geotried_nominatim = False
+WHERE geolocated = False
+AND raw_name LIKE '%Friends%';
+
+-- Append 'olic High School' if name ends with '%Cath'
+UPDATE lax.high_schools
+SET searched_name = raw_name || 'olic High School',
+  geotried_googlev3 = False,
+  geotried_nominatim = False
+WHERE geolocated = False
+AND raw_name LIKE '%Cath';
 
 -- Remove 'High School' if contains 'LC' and replace with 'Lacrosse Club'
 UPDATE lax.high_schools

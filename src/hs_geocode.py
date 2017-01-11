@@ -8,7 +8,6 @@ from geopy import geocoders
 from geopy import exc
 from sys import exit
 
-
 def getConnection():
     conn = psycopg2.connect(
                         dbname='lax',
@@ -88,10 +87,11 @@ def runSQL(conn, sql):
     conn.commit()
 
 def main():
-    num_schools = 50
+    num_schools = 1000
     conn = getConnection()
     curr = conn.cursor()
-    geocoder = 'nominatim'
+    geocoder = 'googlev3'
+    #geocoder = 'nominatim'
     
     '''
     arcgis                      https://developers.arcgis.com/rest/geocode/api-reference/overview-world-geocoding-service.htm

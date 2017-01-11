@@ -19,4 +19,16 @@ def Zipf(N, k, s=1.0):
     return(numerator / denominator)
 
 def ZipfNorm(N, k, s=1.0):
-    return(Zipf(N, k, s)*N)
+    return Zipf(N, k, s)*N
+
+'''
+def main():
+    N = 1500
+    s = 0.5
+    
+    for i in range(1, 1500):
+        print(i, '\tout of\t', N, '\t', '{0:.3f}'.format(Zipf(N, i, s)), '\t', '{0:.3f}'.format(ZipfNorm(N, i, s)))
+        
+if __name__ == '__main__':
+    main()
+'''

@@ -1,11 +1,12 @@
 ﻿CREATE TABLE lax.high_schools_bak_20170109 AS
-SELECT * FROM lax.high_schools;
+SELECT * FROM lax.hs_ranks LIMIT 100;
 
 -- test creating rank views
 SELECT 
   hr.year,
   hr.gender,
   hr.rank,
+  hr.zipf_weight,
   hr.raw_hs_name,
   hr.state,
   hs.raw_name,
