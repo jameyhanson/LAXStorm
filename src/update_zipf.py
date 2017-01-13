@@ -24,9 +24,12 @@ def runSQL(conn, sql):
     conn.commit()
 
 def main():
+    # N = number of items in population
+    # k = rank
+    # s = Zipf coefficient.  > 1 is more left-skewed
     N = 1500
     k = 10
-    s = 0.5
+    s = 0.33
     
     conn = getConnection()
     curr = conn.cursor()

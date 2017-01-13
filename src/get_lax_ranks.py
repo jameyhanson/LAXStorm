@@ -77,12 +77,12 @@ def runSQL(conn, sql):
 def generateUrlRecords(startYear, endYear):
     # example: http://www.laxpower.com/update16/binboy/natlccr.php
     urlRecords = []
-    gender = ['boy', 'grl'] 
+    genders = ['boy', 'grl'] 
     for year in range(startYear, endYear + 1):
-        for gndr in gender:
+        for gender in genders:
             strYear = str(year)[2:]
-            url = ("http://www.laxpower.com/update" + strYear + "/bin" + gndr + "/natlccr.php")
-            urlRecord = UrlRecord(url, year, gndr)
+            url = ("http://www.laxpower.com/update" + strYear + "/bin" + gender + "/natlccr.php")
+            urlRecord = UrlRecord(url, year, gender)
             urlRecords.append(urlRecord)
     return (urlRecords)   # a dictionary of {url:, year:, gender:}
 
@@ -176,6 +176,6 @@ def main():
     print('Updated lax.hs_ranks')
         
     conn.close()
-    print('All done')
+    print('Successfully finished get_lax_ranks.py')
 if __name__ == '__main__':
     main()
