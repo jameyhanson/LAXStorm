@@ -133,6 +133,7 @@ def main():
                   "geolocated = TRUE, " + 
                   "latitude = " + str(location.latitude) + ", " +
                   "longitude = " + str(location.longitude) + ", " +
+                  "geo_loc = ST_SetSRID(ST_MakePoint(" + str(location.longitude) + "," + str(location.longitude) + "), 4326), "
                   "address = '" + location.address.replace("'", "''") + "', " +
                   "json_response = '" + str(location.raw).replace("'", "''") + 
                   "' WHERE id=" + str(id) + ";")

@@ -6,7 +6,7 @@ WHERE geolocated = False
 AND id IN (
     SELECT DISTINCT hs_id
     FROM lax.hs_ranks
-    WHERE rank <= 25)
+    WHERE rank <= 100)
  ORDER BY id;
 
 -- Manually geocode themUPDATE lax.high_schools
