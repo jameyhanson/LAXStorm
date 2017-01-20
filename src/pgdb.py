@@ -15,7 +15,7 @@ class PgDb:
                     user=user,
                     password=password,
                     port = port,
-                    host=host) #added to avoid 'connections on Unix domain socket "/var/pgsql_socket/.s.PGSQL.5432"?'
+                    host=host) #added to avoid 'connections on Unix domain socket "/var/pgsql_socket/.s.PGSQL.5432"?' error
         self.cur = self.conn.cursor()
         
     def exec_sql(self, sql):

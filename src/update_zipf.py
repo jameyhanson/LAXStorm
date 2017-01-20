@@ -15,7 +15,6 @@ def main():
     # k = rank
     # s = Zipf coefficient.  > 1 is more left-skewed
     N = 1500
-    k = 10
     s = 0.33
     
     SCHEMA = 'lam' # Use 'lax' for production

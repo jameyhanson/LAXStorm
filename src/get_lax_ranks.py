@@ -108,11 +108,9 @@ def main():
         
     pgdb = PgDb(dbname='lax', user='lax', password='cloudera', host='/tmp/', port=5432)
     
-    #urls = []
     urls = generateUrlRecords(START_YEAR, END_YEAR)
     
-    hsRankRecords = []
-    
+    #hsRankRecords = []
     for urlRecord in urls:
         hsRankRecords = getHSRankRecords(urlRecord)
         

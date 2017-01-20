@@ -55,7 +55,6 @@ def main():
         geotried_yandex BOOLEAN DEFAULT FALSE,
         geolocated     BOOLEAN DEFAULT FALSE);''')
     pgdb.exec_sql(sql)
-    
     print(SCHEMA + '.high_shools created')
     
     sql = ('CREATE TABLE ' + SCHEMA + '.hs_ranks (' + 
@@ -70,7 +69,6 @@ def main():
         'raw_hs_name    TEXT,' +
         'state          CHAR(2));')
     pgdb.exec_sql(sql)
-    
     print(SCHEMA + '.hs_ranks created')
     
 if __name__ == '__main__':
