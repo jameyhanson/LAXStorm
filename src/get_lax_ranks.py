@@ -4,20 +4,11 @@ Created on Jan 6, 2017
 @author: jamey
 
 Desc: get lacrosse ranks from www.laxpower.com
-      Write to hs_lax_ranks.tsv and
-      lax.high_schools
+      Write to high_schools
 '''
 import urllib.request
-import psycopg2
-# from http.cookiejar import EPOCH_YEAR
-from multiprocessing.managers import State
+from pgdb import PgDb
 
-'''
-From http://stackoverflow.com/questions/32978365/how-do-i-run-psycopg2-on-el-capitan-without-hitting-a-libssl-error
-sudo ln -s /Library/PostgreSQL/9.6/lib/libssl.1.0.0.dylib /usr/local/lib
-sudo ln -s /Library/PostgreSQL/9.6/lib/libcrypto.1.0.0.dylib /usr/local/lib
-sudo ln -s /tmp/.s.PGSQL.5432 /var/pgsql_socket/
-'''
 class UrlRecord:
     def __init__(self, url, year, gender):
         self.url = url
@@ -60,20 +51,6 @@ class HSRankRecord:
     def getState(self):
         return self.state
 
-def getConnection():
-    conn = psycopg2.connect(
-                        dbname='lax',
-                        user='lax',
-                        port = 5432,
-                        host='/tmp/', #added to avoid 'connections on Unix domain socket "/var/pgsql_socket/.s.PGSQL.5432"?'
-                        password='cloudera')
-    return conn
-
-def runSQL(conn, sql):
-    curr = conn.cursor()
-    curr.execute(sql)
-    conn.commit()
-
 def generateUrlRecords(startYear, endYear):
     # example: http://www.laxpower.com/update16/binboy/natlccr.php
     urlRecords = []
@@ -106,57 +83,32 @@ def getHSRankRecords(urlRecord):
             response.close()
     return (HSRankRecords)
 
-def writeHSRankRecord(HSRankRecord, conn):    
-    sql = '''
-INSERT INTO lax.hs_ranks (
-    url,
-    gender,
-    year,
-    rank,
-    raw_hs_name,
-    state) VALUES (''' + (
-    "'" + HSRankRecord.getUrl() + "', " +
-    "'" + HSRankRecord.getGender() + "', " +
-    str(HSRankRecord.getYear()) + ", " +
-    str(HSRankRecord.getRank()) + ", " +
-    "'" + HSRankRecord.getHS() + "', " +
-    "'" + HSRankRecord.getState() + "');")
+def getHSRankSQL(HSRankRecord, schema):    
+    sql = ('INSERT INTO ' + schema + '.hs_ranks (' +
+           'url, ' +
+           'gender, ' +
+           'year, ' +
+           'rank, ' +
+           'raw_hs_name, ' +
+           'state) VALUES (' +
+           "'" + HSRankRecord.getUrl() + "', " +
+           "'" + HSRankRecord.getGender() + "', " +
+           str(HSRankRecord.getYear()) + ", " +
+           str(HSRankRecord.getRank()) + ", " +
+           "'" + HSRankRecord.getHS() + "', " +
+           "'" + HSRankRecord.getState() + "');")
     
-    runSQL(conn, sql)
-    #conn.close()
-
-def populateHighSchools(conn, num_schools_per_year):
-    sql = '''
-INSERT INTO lax.high_schools (
-   raw_name,
-   state) 
-   (SELECT DISTINCT
-     raw_hs_name,
-     state
-   FROM lax.hs_ranks
-   WHERE rank <= ''' + str(num_schools_per_year) + ');'
+    return sql
     
-    runSQL(conn, sql)
-    
-def updateHSRanks(conn):
-    sql = '''
- UPDATE lax.hs_ranks AS hr
- SET hs_id = (
-   SELECT hs.id
-   FROM lax.high_schools hs
-   WHERE hs.raw_name = hr.raw_hs_name
-   AND hs.state = hr.state);'''
-    
-    runSQL(conn, sql)
-   
 def main():   
     START_YEAR = 2003
     END_YEAR = 2016
-    num_schools_per_year = 1500
-    conn = getConnection()
+    SCHEMA = 'lam' #change to lax for production
+    NUM_SCHOOLS_PER_YEAR = 1500
+        
+    pgdb = PgDb(dbname='lax', user='lax', password='cloudera', host='/tmp/', port=5432)
     
-    # urlList is a list of url dictionaries
-    urls = []
+    #urls = []
     urls = generateUrlRecords(START_YEAR, END_YEAR)
     
     hsRankRecords = []
@@ -165,17 +117,32 @@ def main():
         hsRankRecords = getHSRankRecords(urlRecord)
         
         for HSRankRecord in hsRankRecords:
-            writeHSRankRecord(HSRankRecord, conn)
+            sql = getHSRankSQL(HSRankRecord, SCHEMA)
+            pgdb.exec_sql(sql)
         
         print('Completed ', HSRankRecord.getGender(), ':', str(HSRankRecord.getYear()))
     
-    populateHighSchools(conn, num_schools_per_year)
-    print('Populated lax.high_schools')
+    # populate the high_schools table with high schools
+    sql = ('INSERT INTO ' + SCHEMA + '.high_schools (' +
+           'raw_name, ' +
+           'state) ' + 
+           '(SELECT DISTINCT ' +
+           'raw_hs_name, ' +
+           'state ' +
+           'FROM ' + SCHEMA + '.hs_ranks ' +
+           'WHERE rank <= ' + str(NUM_SCHOOLS_PER_YEAR) + ');')
+    pgdb.exec_sql(sql)
+    print('Populated ' + SCHEMA + '.high_schools')
     
-    updateHSRanks(conn)
-    print('Updated lax.hs_ranks')
+    # update hs_ranks.hs_id
+    sql = ('UPDATE ' + SCHEMA + '.hs_ranks AS hr ' +
+           'SET hs_id = (' + 
+           'SELECT hs.id ' +
+           'FROM ' + SCHEMA + '.high_schools hs ' +
+           'WHERE hs.raw_name = hr.raw_hs_name ' +
+           'AND hs.state = hr.state);')
+    pgdb.exec_sql(sql)
+    print('Updated ' + SCHEMA + '.hs_ranks')
         
-    conn.close()
-    print('Successfully finished get_lax_ranks.py')
 if __name__ == '__main__':
     main()
