@@ -59,7 +59,7 @@ def geocodeHS(geocoder, hs_id, lookup_hs_name):
         return None
 
 def main():
-    SCHEMA = 'lam' # Use 'lax' for production
+    SCHEMA = 'lax' # Use 'lax' for production
     num_schools = 3
     
     pgdb = PgDb(dbname='lax', user='lax', password='cloudera', host='/tmp/', port=5432)

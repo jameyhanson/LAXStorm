@@ -66,7 +66,7 @@ def main():
 
     sql = '''
     UPDATE ''' + SCHEMA + '''.high_schools
-    SET country = 'Cananda'
+    SET country = 'Canada'
     WHERE state in ('AB', 'BC', 'MB', 'NB', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT');
     '''
     pgdb.exec_sql(sql)
